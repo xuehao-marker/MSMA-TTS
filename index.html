@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta name="google-site-verification" content="ftFOlJETX-2KNjaPh8W6s8lhigItRuu9fOmjHZZ0nY0" />
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.5, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <title>Accented Text-to-Speech</title>
+</head>
+<style type="text/css">
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  audio {
+    width: 100%;
+  }
+
+  thead>tr>th:first-child {
+    width: 80px;
+  }
+
+  @media (max-width: 767px) {
+    .big-screen {
+      display: none;
+    }
+  }
+
+  @media (min-width: 767px) {
+    .small-screen {
+      display: none;
+    }
+  }
+</style>
+
+<body>
+  <header class="header">
+    <div class="jumbotron bg-secondary text-center">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <h2><a class="text-light">
+              Accented Text-to-Speech Synthesis with Limited Data <h2>
+              <br> <h5>Xuehao Zhou, Mingyang Zhang, Yi Zhou, Zhizheng Wu, Haizhou Li </h5> 
+              <br> <h5>National University of Singapore, The Chinese University of Hong Kong, Shenzhen</a></h5>
+            
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+      <div class="row" id="result">
+        <div class="col-md-12">
+          <!-- <p><b><h5>Authors</h5></b><br>
+            Xuehao Zhou, Mingyang Zhang, Yi Zhou, Zhizheng Wu, Haizhou Li <br>
+            <br>
+            National University of Singapore, The Chinese University of Hong Kong, Shenzhen <br>
+            
+          </p><hr>
+           
+           <p><b><h5>Abstract</h5></b><br>
+            This paper presents an accented text-to-speech (TTS) synthesis framework with limited training data. We study two aspects concerning accent rendering: phonetic (phoneme difference) and prosodic (pitch pattern and phoneme duration) variations. The proposed accented TTS framework consists of two models: an accented front-end for grapheme-to-phoneme (G2P) conversion and an accented acoustic model with integrated pitch and duration predictors for phoneme-to-Mel-spectrogram prediction. The accented front-end directly models the phonetic variation, while the accented acoustic model explicitly controls the prosodic variation. Specifically, both models are first pre-trained on a large amount of data, then only the accent-related layers are fine-tuned on a limited amount of data for the target accent. In the experiments, speech data of three English accents, i.e., General American English, Irish English, and British English Received Pronunciation, are used for pre-training. The pre-trained models are then fine-tuned with Scottish and General Australian English accents, respectively. Both objective and subjective evaluation results show that the accented TTS front-end fine-tuned with a small accented phonetic lexicon (5k words) effectively handles the phonetic variation of accents, while the accented TTS acoustic model fine-tuned with a limited amount of accented speech data (approximately 3 minutes) effectively improves the prosodic rendering including pitch and duration. The overall accent modeling contributes to improved speech quality and accent similarity.          <hr>
+           <p> <b><h5>Framework Overview</h5></b>
+            <img src= "aTTS.png" />          </p>
+          <hr> -->
+          <p>
+            <b><h3>Speech Samples</h3></b><hr>
+          The framework is evaluated with one Scottish speaker from the CMU_ARCTIC Corpus [<a class="text-success" href="#1">1</a>] and one Australian speaker from Google TTS API [<a class="text-success" href="#2">2</a>]. </p>
+          <hr>
+          We study two scenarios on the accented TTS framework, a) only a small accented phonetic lexicon is available for the target accent. b) both a small accented phonetic lexicon and limited accented speech samples are available for the target accent.
+          <br>
+            The following TTS systems are implemented for comparison. <br>
+                   
+            (1) <b>Char-AM</b>: This is a multi-speaker TTS acoustic model that takes a character sequence as input. <br>
+            (2) <b>US_G2P-AM</b>: This is an accented TTS framework that
+consists of an American G2P model and a multi-speaker
+TTS acoustic model. The American G2P model is part
+of the pre-trained multi-accent G2P model conditioned
+on the General American accent ID. <br>
+            (3) <b>SCOT_G2P-AM</b>: This is an accented TTS framework
+that consists of a Scottish G2P model and a multi-speaker
+TTS acoustic model. The Scottish G2P model is the pretrained
+multi-accent G2P model fine-tuned with a Scottish
+phonetic lexicon of 5k words.<br>
+            (4) <b>AU_G2P-AM</b>: This is similar to SCOT_G2P-AM except
+that the G2P model is fine-tuned with a General Australian
+phonetic lexicon of 5k words. <br>
+            (5) <b>SCOT_G2P-F0_Dur_AM</b>: This is an accented TTS
+framework that consists of a Scottish G2P model and a
+multi-speaker TTS acoustic model with integrated pitch
+and duration predictors. The Scottish G2P model is the
+pre-trained multi-accent G2P model fine-tuned with a
+Scottish phonetic lexicon of 5k words. <br>
+            (6) <b>AU_G2P-F0_Dur_AM</b>: This is similar to SCOT_G2P-F0_
+Dur_AM except that the G2P model is fine-tuned with
+a General Australian phonetic lexicon of 5k words. <br>
+            <b>Note</b>: The TTS system followed with ’-L’ denotes using only a small accented phonetic lexicon, with ’-S’ denotes using only limited accented speech data, and with
+’-LS’ denotes using both of them. 
+          </p> <hr>
+          
+                <p>
+                  a) Only a small accented phonetic lexicon.
+                </p>
+     
+                  <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>US_G2P-AM-L</th>
+                          <th>SCOT_G2P-AM-L</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th style="vertical-align: middle;" rowspan="6"> Scottish </th>
+                               
+                          <td>s t <span style='color:red'><b>aa</b></span> p t
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/gam/arctic_a0035_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>s t <span style='color:red'><b>oo</b></span> p t
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/edi/arctic_a0035_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/target/arctic_a0035_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> stopped </td>
+                          
+   
+                          </tr>
+                        <tr>
+                          
+                          <td>d <span style='color:red'><b>aa</b></span> lw @r r z
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/gam/arctic_b0260_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>d <span style='color:red'><b>oo</b></span> l @r r z
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/edi/arctic_b0260_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/target/arctic_b0260_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> dollars </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>n <span style='color:red'><b>aa</b></span> t^ @ d
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/gam/arctic_b0268_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>n <span style='color:red'><b>oo</b></span> d i d
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/edi/arctic_b0268_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>                    
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/scottish/target/arctic_b0268_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> nodded </td>
+                        
+                          </tr>
+                        
+                       
+                  
+                  
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>US_G2P-AM-L</th>
+                          <th>AU_G2P-AM-L</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th style="vertical-align: middle;" rowspan="3"> Australian </th>
+                          <td>w oo t^ <span style='color:red'><b>@r r</b></span>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/gam/LJ002-0096_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>w oo t^ <span style='color:red'><b>@</b></span>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/aus/LJ002-0096_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/target/LJ002-0096_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> water </td>
+   
+                          </tr>
+                        <tr>
+                          
+                          <td>g <span style='color:red'><b>aa</b></span> th i k
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/gam/LJ001-0063_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>g <span style='color:red'><b>o</b></span> th i k
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/aus/LJ001-0063_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/target/LJ001-0063_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> gothic </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>w <span style='color:red'><b>or r</b></span> m
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/gam/LJ004-0101_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>w <span style='color:red'><b>oo</b></span> m
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/aus/LJ004-0101_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario1/australian/target/LJ004-0101_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> warm </td>
+                        
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>  
+        </div>
+      </div>
+      <hr>
+            <p>
+              b) Both a Small Accented Phonetic Lexicon and Limited
+Accented Speech Samples.            
+            </p>
+                  <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th>Char-AM</th>
+                          <th>SCOT_G2P-AM-L</th>
+                          <th>SCOT_G2P-F0_Dur_AM-L</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th style="vertical-align: middle;" rowspan="3"> Scottish </th>
+                          <th style="vertical-align: middle;" rowspan="3"> Not fine-tuned </th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/ch/arctic_a0455_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe/arctic_a0455_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe_f0_dur/arctic_a0455_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                         <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/target/arctic_a0455_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Three oilers and a fourth engineer, was his greeting. </td>
+                          </tr>
+                        <tr>
+                          
+                         <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/ch/arctic_a0456_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe/arctic_a0456_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe_f0_dur/arctic_a0456_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                         <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/target/arctic_a0456_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Eighteen hundred, he calculated. </td>
+                            
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/ch/arctic_a0461_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe/arctic_a0461_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/pe_f0_dur/arctic_a0461_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                         <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/zs/target/arctic_a0461_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> The stout wood was crushed like an eggshell. </td>
+                          </tr>       
+                      </tbody>
+                    </table>
+                  </div>
+        <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th>Char-AM-S</th>
+                          <th>SCOT_G2P-AM-LS</th>
+                          <th>SCOT_G2P-F0_Dur_AM-LS</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr> <th style="vertical-align: middle;" rowspan="6">Scottish</th>                   
+                          <th style="vertical-align: middle;" rowspan="3"> Fine-tuned with 50 utts </th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/ch/arctic_a0371_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe/arctic_a0371_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                             <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe_f0_dur/arctic_a0371_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/target/arctic_a0371_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> In partnership with Daylight, the pair raided the San Jose Interurban. </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/ch/arctic_a0410_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe/arctic_a0410_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                             <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe_f0_dur/arctic_a0410_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/target/arctic_a0410_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> The Eldorado emptied its occupants into the street to see the test. </td>
+                            
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/ch/arctic_a0426_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe/arctic_a0426_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                             <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/pe_f0_dur/arctic_a0426_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/50/target/arctic_a0426_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Obviously, it was a disease that could be contracted by contact. </td>
+                            
+                          </tr>
+                         <tr>
+                          <th style="vertical-align: middle;" rowspan="3">Fine-tuned with 300 utts</th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/ch/arctic_a0370_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe/arctic_a0370_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe_f0_dur/arctic_a0370_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/target/arctic_a0370_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> I just do appreciate it without being able to express my feelings. </td>
+                            
+                          </tr>
+                         <tr>
+                          
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/ch/arctic_a0389_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe/arctic_a0389_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe_f0_dur/arctic_a0389_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/target/arctic_a0389_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td> Bob, growing disgusted, turned back suddenly and attempted to pass Mab. </td>
+                          </tr>
+                         <tr>
+                          
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/ch/arctic_a0405_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe/arctic_a0405_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/pe_f0_dur/arctic_a0405_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/scottish/300/target/arctic_a0405_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td> His newborn cunning gave him poise and control. </td>
+                            
+                          </tr>
+                      </tbody>
+                    </table>
+                  </div>
+      <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th>Char-AM</th>
+                          <th>AU_G2P-AM-L</th>
+                          <th>AU_G2P-F0_Dur_AM-L</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th style="vertical-align: middle;" rowspan="3"> Australian </th>
+                          <th style="vertical-align: middle;" rowspan="3"> Not fine-tuned </th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/ch/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe/LJ005-0045_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe_f0_dur/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/target/LJ005-0045_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Nor did it confine itself to mere verbal recommendations. </td>
+                         
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/ch/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe/LJ005-0116_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe_f0_dur/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/target/LJ005-0116_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> but an empty regulation which all so disposed could defy. </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/ch/LJ005-0288_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe/LJ005-0288_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/pe_f0_dur/LJ005-0288_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/zs/target/LJ005-0288_gen.wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> when speaking more particularly of the borough jails. </td>
+                          </tr>
+           
+          
+                  
+                  
+                      </tbody>
+                    </table>
+                  </div>
+        <div class="big-screen">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th>Char-AM-S</th>
+                          <th>AU_G2P-AM-LS</th>
+                          <th>AU_G2P-F0_Dur_AM-LS</th>
+                          <th>Reference Speech</th>
+                          <th>Transcription</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr> <th style="vertical-align: middle;" rowspan="6">Australian</th>       
+                        <th style="vertical-align: middle;" rowspan="3"> Fine-tuned with 50 utts </th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/ch/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe_f0_dur/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/target/LJ005-0045_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Nor did it confine itself to mere verbal recommendations. </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/ch/LJ005-0106_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe/LJ005-0106_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe_f0_dur/LJ005-0106_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/target/LJ005-0106_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> Jails, of which the old prison at Reading was a specimen, were still left intact. </td>
+                          </tr>
+                        <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/ch/LJ005-0133_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe/LJ005-0133_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/pe_f0_dur/LJ005-0133_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/50/target/LJ005-0133_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td> The provision of separate sleeping cells was still quite inadequate. For instance, </td>
+                          </tr>
+                         <tr>
+                          <th style="vertical-align: middle;" rowspan="3">Fine-tuned with 300 utts</th>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/ch/LJ005-0094_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe/LJ005-0094_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe_f0_dur/LJ005-0094_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/target/LJ005-0094_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td> to call for information as to the observance of its provisions. </td>
+                          </tr>
+                         <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/ch/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe_f0_dur/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/target/LJ005-0116_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td> but an empty regulation which all so disposed could defy. </td>
+                          </tr>
+                         <tr>
+                          
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/ch/LJ005-0297_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                          <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe/LJ005-0297_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/pe_f0_dur/LJ005-0297_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td>
+                            <audio controls>
+                              <source src="./Speech_samples/scenario2/australian/300/target/LJ005-0297_gen.wav" type="audio/wav" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </td>
+                           <td> They therefore recommended that the prisoners should be removed </td>
+                          </tr>       
+                      </tbody>
+                    </table>
+                  </div>
+                 
+        </div>
+      </div>
+     <hr>
+      <div class="row" id="ref">
+        <div class="col">
+          <h3>References</h3>
+          <div>
+            <p>
+              <a name="1">[1]</a>
+               J. Kominek and A. W. Black, “The cmu arctic speech databases,” in
+Fifth ISCA workshop on speech synthesis, 2004. <br>
+              <a name="2">[2]</a>
+              https://cloud.google.com/text-to-speech.
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <!-- <div class="row" id="contact">
+          <div class="col">
+            <h2>Contact</h2>
+            <div></div>
+          </div>
+        </div> -->
+    </div>
+  </main>
+  <footer class="bg-secondary text-light mt-4 pt-3 pb-2 ">
+    <div class="container">
+      <p class="text-center">
+        
+      </p>
+    </div>
+  </footer>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
