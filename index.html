@@ -88,7 +88,8 @@
             (4) <b>AM-SIGAM</b>: A multi-speaker TTS system that conditions the AM on the SIGAM. <br>
             (5) <b>AM-SIMSAM</b>: A multi-speaker TTS system that conditions the AM on the speaker-independent multi-scale accent model (SIMSAM), which includes the SIGAM, SILAM, and LAPM, as shown in Fig. 1. <br>
             (6) <b>AM-MSAM-S</b>: A multi-speaker TTS system that conditions the AM on the multi-scale accent model (MSAM), consisting of the global accent model (GAM) and local accent model (LAM), without speaker disentanglement. Reference speech is required during inference, denoted as ’-S’. <br>
-            Among all implemented systems, the reliance on reference speech during inference is unique to AM-MSAM-S. The LAPM is excluded from this system because predicting phoneme-level HL directly from phonemes is challenging without speaker disentanglement, as speaker information remains entangled in HL. Note that for both GST and VAE models, the average of all utterance-level embeddings extracted from the training data of each accent is used to represent the corresponding accent category during inference, similar to HAvg G for the SIGAM. 
+          <p></p>  
+          Among all implemented systems, the reliance on reference speech during inference is unique to AM-MSAM-S. The LAPM is excluded from this system because predicting phoneme-level HL directly from phonemes is challenging without speaker disentanglement, as speaker information remains entangled in HL. Note that for both GST and VAE models, the average of all utterance-level embeddings extracted from the training data of each accent is used to represent the corresponding accent category during inference, similar to HAvg G for the SIGAM. 
           </p> <hr>
           
                 <p>
