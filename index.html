@@ -47,7 +47,7 @@
         <div class="row align-items-center">
           <div class="col-md-12">
             <h2><a class="text-light">
-              Multi-Scale Accent Modeling with Disentangling <br> for Multi-Speaker Multi-Accent TTS Synthesis <h2>
+              Multi-Scale Accent Modeling and Disentangling <br> for Multi-Speaker Multi-Accent Text-to-Speech Synthesis <h2>
               <br> <h5>Xuehao Zhou, Mingyang Zhang, Yi Zhou, Zhizheng Wu, Haizhou Li </h5> 
               <br> <h5>National University of Singapore, The Chinese University of Hong Kong, Shenzhen</a></h5>
             
@@ -78,16 +78,17 @@
             <b><h3>Speech Samples</h3></b><hr>
           The framework is trained and evaluated using L2-ARCTIC Corpus [<a class="text-success" href="#1">1</a>]. </p>
           <hr>
-          We evaluate two inference scenarios on the multi-speaker multi-accent TTS framework, a) Multi-speaker inherent-accent speech synthesis. b) Multi-speaker cross-accent speech synthesis.
+          We evaluate two inference scenarios for generating multi-speaker multi-accent speech: a) multi-speaker inherent-accent and b) multi-speaker cross-accent.
           <br>
-            The following TTS systems are implemented for comparison. <br>
+            The following TTS systems are implemented for comparisons: <br>
                    
-            (1) <b>GST</b>: This is the TTS system that AM conditions on the style embedding from the GST model [19]. We set the number of token layers to six, the same as training accent categories. <br>
-            (2) <b>VAE</b>: This is the TTS system that AM conditions on the style latent representation from a VAE model. <br>
-            (3) <b>GADM</b>: This is the TTS system that AM conditions on the utterance level accent embedding HG from the GADM.<br>
-            (4) <b>MSAM</b>: This is the TTS system that AM conditions on the multi-scale accent embeddings obtained from GAM and LAM, where no speaker disentanglement is performed. Note that this system needs the reference speech during inference, since the LAPM is not involved in this system. <br>
-            (5) <b>MSADM</b>: This is the proposed TTS system that the AMconditions on GADM and LADM, producing multiscale speaker-independent and accent-discriminative embeddings HG and HL, respectively. The LAPM is trained and used during inference. <br>
-            <b>Note</b>: For GST and VAE, the average vector of style embeddings across all training data of an accent category is used during inference, similar as the HAvg G for GADM. 
+            (1) <b>AM-GST</b>: A multi-speaker TTS system that conditions the AM on the GST model [31]. We set the number of token layers to six, corresponding to the number of accent categories during training. <br>
+            (2) <b>AM-VAE</b>: A multi-speaker TTS system that conditions the AM on the VAE model [32]. <br>
+            (3) <b>AM-AID</b>: A multi-speaker TTS system that conditions the AM on the accent identity, which is passed to an accent embedding table to obtain an accent embedding for each accent. 
+            (4) <b>AM-SIGAM</b>: A multi-speaker TTS system that conditions the AM on the SIGAM. <br>
+            (5) <b>AM-SIMSAM</b>: A multi-speaker TTS system that conditions the AM on the speaker-independent multi-scale accent model (SIMSAM), which includes the SIGAM, SILAM, and LAPM, as shown in Fig. 1. <br>
+            (6) <b>AM-MSAM-S</b>: A multi-speaker TTS system that conditions the AM on the multi-scale accent model (MSAM), consisting of the global accent model (GAM) and local accent model (LAM), without speaker disentanglement. Reference speech is required during inference, denoted as ’-S’. <br>
+            Among all implemented systems, the reliance on reference speech during inference is unique to AM-MSAM-S. The LAPM is excluded from this system because predicting phoneme-level HL directly from phonemes is challenging without speaker disentanglement, as speaker information remains entangled in HL. Note that for both GST and VAE models, the average of all utterance-level embeddings extracted from the training data of each accent is used to represent the corresponding accent category during inference, similar to HAvg G for the SIGAM. 
           </p> <hr>
           
                 <p>
