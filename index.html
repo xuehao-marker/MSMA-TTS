@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-  <title>Multi-Accent Multi-Speaker TTS Synthesis</title>
+  <title>Multi-Speaker Multi-Accent TTS Synthesis</title>
 </head>
 <style type="text/css">
   table {
@@ -84,7 +84,7 @@
                    
             (1) <b>AM-GST</b>: A multi-speaker TTS system that conditions the AM on the GST model [31]. We set the number of token layers to six, corresponding to the number of accent categories during training. <br>
             (2) <b>AM-VAE</b>: A multi-speaker TTS system that conditions the AM on the VAE model [32]. <br>
-            (3) <b>AM-AID</b>: A multi-speaker TTS system that conditions the AM on the accent identity, which is passed to an accent embedding table to obtain an accent embedding for each accent. 
+            (3) <b>AM-AID</b>: A multi-speaker TTS system that conditions the AM on the accent identity, which is passed to an accent embedding table to obtain an accent embedding for each accent. <br>
             (4) <b>AM-SIGAM</b>: A multi-speaker TTS system that conditions the AM on the SIGAM. <br>
             (5) <b>AM-SIMSAM</b>: A multi-speaker TTS system that conditions the AM on the speaker-independent multi-scale accent model (SIMSAM), which includes the SIGAM, SILAM, and LAPM, as shown in Fig. 1. <br>
             (6) <b>AM-MSAM-S</b>: A multi-speaker TTS system that conditions the AM on the multi-scale accent model (MSAM), consisting of the global accent model (GAM) and local accent model (LAM), without speaker disentanglement. Reference speech is required during inference, denoted as ’-S’. <br>
